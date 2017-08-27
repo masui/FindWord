@@ -28,6 +28,14 @@ var app = {
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
+
+	// Admobサンプル広告バナーコード
+	AdMob.createBanner({
+	    adId:'ca-app-pub-3940256099942544/6300978111',
+	    position:AdMob.AD_POSITION.BOTTOM_CENTER,
+	    overlap: true,
+	    autoShow:true
+	});
     },
 
     // Update DOM on a Received Event
