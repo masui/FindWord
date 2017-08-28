@@ -1,0 +1,14 @@
+$KCODE = 'u'
+
+ARGF.each { |line|
+  line.chomp!
+  a = line.split('')
+  w = {}
+  found = false
+  a.each { |c|
+    found = true if w[c] 
+    w[c] = true
+  }
+  puts line unless found
+}
+

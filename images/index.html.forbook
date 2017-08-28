@@ -1,0 +1,310 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>文字列捜し</title>
+</head>
+<body onresize='setsize()'>
+<script type="text/javascript">
+var size = 8;       // 問題サイズ
+var titleDiv;       // 問題上部のdiv
+var probDiv;        // size×sizeの問題矩形
+var charDivs1       // 表示文字の背景div
+var charDivs2;      // 表示文字のdiv
+var chars;          // 問題文字データ
+
+var startx,starty;  // 正解表示div
+var dirx, diry;     // 正解表示方向 (1,0) or (0,1)
+
+var clockDiv;       // 時計表示矩形
+var sec, min;       // 時間
+var countTimer;     // 1秒タイマ
+
+var answerDiv;      // 正解数表示div
+var answers = 0;    // 正解した数
+
+var beginButton;    // 開始ボタン
+var finishButton;   // 終了ボタン
+var running;        // 出題中かどうか
+
+var worddic = [
+  "ローマ帝国",
+  "天下一品", "マラソン", "焼肉定食", "弱肉強食",
+  "四面楚歌", "臥薪嘗胆", "天気予報", "慶應義塾",
+  "東海道線", "明治神宮", "徳川家康", "先手必勝",
+  "九死一生", "起死回生", "一発逆転", "国士無双",
+  "人生劇場",
+];
+var word = '';      // 問題の単語
+var lastWord = '';  // 前の問題
+var wordlen;        // 単語の長さ
+
+function rand(n){ // rand(3) => 0, 1, 2
+  return Math.floor(Math.random() * n);
+}
+
+function counttime(){
+  if(++sec >= 60){
+    min++;
+    sec = 0;
+  }
+  clockDiv.innerHTML = min + ':' + ('00'+sec).substr(-2,2);
+  countTimer = setTimeout('counttime()',1000);
+}
+
+function init(){
+  // 表示要素を生成
+  var i,x,y;
+  titleDiv = document.createElement('div');
+  titleDiv.style.position = 'absolute';
+  document.body.appendChild(titleDiv);
+
+  beginButton = document.createElement('input');
+  beginButton.type = "button";
+  beginButton.value = '開始';
+  beginButton.style.backgroundColor = '#eee';
+  beginButton.style.width = '20%';
+  beginButton.style.height = '100%';
+  beginButton.style.cssFloat = 'left';
+  beginButton.addEventListener('click',begin,true);
+  titleDiv.appendChild(beginButton);
+
+  answerDiv = document.createElement('div');
+  answerDiv.style.height = '100%';
+  answerDiv.style.cssFloat = 'left';
+  titleDiv.appendChild(answerDiv);
+
+  clockDiv = document.createElement('div');
+  clockDiv.style.height = '100%';
+  clockDiv.style.cssFloat = 'left';
+  titleDiv.appendChild(clockDiv);
+
+  finishButton = document.createElement('input');
+  finishButton.type = "button";
+  finishButton.value = '終了';
+  finishButton.style.backgroundColor = '#eee';
+  finishButton.style.width = '20%';
+  finishButton.style.height = '100%';
+  finishButton.style.cssFloat = 'right';
+  finishButton.addEventListener('click',finish,true);
+  titleDiv.appendChild(finishButton);
+
+  probDiv = document.createElement('div');
+  probDiv.style.position = 'absolute';
+  document.body.appendChild(probDiv);
+
+  charDivs1 = new Array(size);
+  charDivs2 = new Array(size);
+  for(y=0;y<size;y++){
+    charDivs1[y] = new Array(size);
+    charDivs2[y] = new Array(size);
+    for(x=0;x<size;x++){
+      var e = document.createElement('div');
+      e.style.position = 'absolute';
+      e.style.backgroundColor = '#333';
+      probDiv.appendChild(e);
+      charDivs1[y][x] = e;
+
+      var f = document.createElement('div');
+      e.appendChild(f);
+      charDivs2[y][x] = f;
+    }
+  }
+  chars = new Array(size);
+  for(i=0;i<size;i++){
+    chars[i] = new Array(size);
+  }
+}
+
+function setsize(){
+  // 端末のサイズや向きに応じて表示要素の位置とサイズを設定
+  var x,y,e;
+  var height = window.innerHeight;            // 表示領域の高さ
+  var width = window.innerWidth;              // 表示領域の幅
+  var titleHeight = height * 1/20;            // タイトル高さ
+  var frameWidth = Math.min(height,width) * 1/40;
+  var winSize = Math.min(height-(frameWidth*2)-(titleHeight*3),width-(frameWidth*2));
+
+  titleDiv.style.top = frameWidth+titleHeight;
+  titleDiv.style.left = (width-winSize)/2;
+  titleDiv.style.width = winSize;
+  titleDiv.style.height = titleHeight;
+  clockDiv.style.fontSize = titleHeight * 6 / 10;
+  clockDiv.style.marginLeft = titleHeight;
+  answerDiv.style.fontSize = titleHeight * 6 / 10;
+  answerDiv.style.marginLeft = titleHeight;
+  beginButton.style.fontSize = titleHeight * 6 / 10;
+  finishButton.style.fontSize = titleHeight * 6 / 10;
+  probDiv.style.top = titleHeight + frameWidth + titleHeight * 2;
+  probDiv.style.left = (width-winSize)/2;
+  probDiv.style.width = winSize;
+  probDiv.style.height = winSize;
+
+  var gap = winSize / 180;
+  var charSize = (winSize - gap * (size-1)) / size;
+
+  for(y=0;y<size;y++){
+    for(x=0;x<size;x++){
+      e = charDivs1[y][x];
+      e.style.width = charSize-gap;
+      e.style.height = charSize-gap;
+      e.style.top = y * charSize + gap * y;
+      e.style.left = x * charSize + gap * x;
+      e.style.backgroundColor = '#555';
+      e = charDivs2[y][x];
+      e.style.marginTop = 0;
+      e.style.marginLeft = 6;
+      e.style.fontSize = charSize * 7 / 10;
+      e.style.color = 'white';
+    }
+  }
+}
+
+function calcchars(){
+  var i,x,y,s;
+  var dx,dy;
+  while(word == lastWord){ // 前回と同じ問題が連続しないようにする
+    word = worddic[rand(worddic.length)];
+  }
+  lastWord = word;
+
+  var words = word.split('');
+  wordlen = word.length;
+  var count = 0;
+  while(count != 1){
+    count = 0;
+    //
+    // ランダムに文字を割り当て
+    //
+    for(y=0;y<size;y++){
+      for(x=0;x<size;x++){
+        // 周囲と異なるものの優先度を上げる
+        w = []
+        for(i=0;i<wordlen;i++){
+          c = words[i];
+          if(x > 0 && chars[y][x-1] == c){
+            w.push(c);
+          }
+          else if(y > 0 && chars[y-1][x] == c){
+            w.push(c);
+          }
+          else {
+            w.push(c); w.push(c); w.push(c); w.push(c);
+            w.push(c); w.push(c); w.push(c); w.push(c);
+          }
+        }
+        chars[y][x] = w[rand(w.length)];
+      }
+    }
+    //
+    // 文字列にマッチするか検索。あればランダムに置換。
+    //
+    for(dx=0;dx<2;dx++){
+      dy = 1-dx;
+      for(y=0;y<size-(wordlen-1)*dy;y++){
+        for(x=0;x<size-(wordlen-1)*dx;x++){
+          s = '';
+          for(i=0;i<wordlen;i++){
+            s += chars[y+i*dy][x+i*dx];
+          }
+          if(word == s){ // 一致するものがみつかったら再計算
+            count = -1;
+            for(i=0;i<wordlen;i++){
+              chars[y+i*dy][x+i*dx] = words[rand(wordlen)];
+            }
+          }
+        }
+      }
+    }
+    if(count == 0){ // 一致するものがみつからなかったとき
+      //
+      //ランダムな場所に正しい文字列を埋め込む
+      //
+      dirx = rand(2); // dirx, diry = (0, 1) または (1, 0)
+      diry = 1-dirx;
+      startx = rand(size-wordlen*dirx);
+      starty = rand(size-wordlen*diry);
+      for(i=0;i<wordlen;i++){
+        chars[starty+i*diry][startx+i*dirx] = words[i];
+      }
+      // 正解をクリックすると次の問題へ
+      for(y=0;y<size;y++){
+        for(x=0;x<size;x++){
+          charDivs2[y][x].removeEventListener('click',correctanswer, true);
+        }
+      }
+      for(i=0;i<4;i++){
+        charDivs2[starty+i*diry][startx+i*dirx].
+              addEventListener('click',correctanswer, true);
+      }
+      //
+      // ユニークかどうか検証
+      //
+      for(dx=0;dx<2;dx++){ // (dx,dy) = (0, 1), (1, 0)
+        dy = 1-dx;
+        for(y=0;y<size-(wordlen-1)*dy;y++){
+          for(x=0;x<size-(wordlen-1)*dx;x++){
+            s = '';
+            for(i=0;i<wordlen;i++){
+              s += chars[y+i*dy][x+i*dx];
+            }
+            if(word == s){
+              count++;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+function display(){
+  answerDiv.innerHTML = answers + "問正解";
+  for(var y=0;y<size;y++){
+    for(var x=0;x<size;x++){
+      charDivs2[y][x].innerHTML = chars[y][x];
+      charDivs2[y][x].style.color = 'white';
+    }
+  }
+}
+
+function finish(){ // 正解を表示して終了
+  for(var i=0;i<wordlen;i++){
+    charDivs2[starty+i*diry][startx+i*dirx].style.color = 'yellow';
+  }
+  clearTimeout(countTimer);
+  running = false;
+}
+
+function correctanswer(){
+  if(running){
+    answers++;
+    setTimeout('correctanswer2()',800);
+    document.body.style.backgroundColor = '#ccc';
+  }
+}
+
+function correctanswer2(){
+  document.body.style.backgroundColor = '#fff';
+  calcchars();
+  display();
+}
+
+function begin(){ // 開始
+  min = 0;
+  sec = 0;
+  clockDiv.innerHTML = "0:00";
+  clearTimeout(countTimer);
+  countTimer = setTimeout('counttime()',1000);
+  answers = 0;
+  running = true;
+  calcchars();
+  display();
+}
+
+init();     // 変数、divなどの初期化
+setsize();  // 表示要素のサイズ設定
+begin();    // 出題スタート
+</script>
+</body>
+</html>
+
