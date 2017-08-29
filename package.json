@@ -1,7 +1,7 @@
 {
-    "name": "findword.com.pitecan",
+    "name": "com.pitecan.find_word",
     "displayName": "FindWord",
-    "version": "1.0.2",
+    "version": "1.0.0",
     "description": "Finding a four-letter word in a character matrix.",
     "main": "index.js",
     "scripts": {

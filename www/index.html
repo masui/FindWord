@@ -5,10 +5,63 @@
     <style type="text/css">
     </style>
   </head>
+
+  <!--
+  <head>
+    <title>AdMob banner demo</title>
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <style>
+      /* following two viewport lines are equivalent to the meta viewport statement above, needed for Windows */
+      /* see http://www.quirksmode.org/blog/archives/2014/05/html5_dev_conf.html and http://dev.w3.org/csswg/css-device-adapt/ */
+      @-ms-viewport { width: 100vw ; zoom: 100% ; }  @viewport { width: 100vw ; zoom: 100% ; }
+      @-ms-viewport { user-zoom: fixed ; }           @viewport { user-zoom: fixed ; }
+    </style>
+  </head>
+  -->
+
   <body onresize='setsize()'>
     <script type="text/javascript" src="cordova.js"></script>
     <script src="js/findword.js"></script>
     <script src="js/admob.js"></script>
+
+    <div id="alertdiv"/>
   </body>
+
+  <!--
+  <body>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script src="js/admob.js"></script>
+    <div>
+      <h1>demo</h1>
+
+      <p>You must first touch the "load Intersitial" link and wait for an alert() message. After you get the alert() message, the "show Interstitial" link will work. Due to network and API delays, you may not always see an immediate response to clicking a link.</p>
+
+      <lu>
+	<li><a href="javascript:admob.cacheInterstitial();">load Interstitial</a></li>
+	<br/>
+	<li><a href="javascript:showInterstitial();">show Interstitial</a></li>
+	<br/>
+	<li><a href="javascript:showTestBanner();">show test banner</a></li>
+	<br/>
+	<li><a href="javascript:admob.showBannerAbsolute(admob.BannerSize.BANNER,0,70);">banner 1</a></li>
+	<br/>
+	<li><a href="javascript:admob.showBannerAbsolute(admob.BannerSize.BANNER,30,70);">banner 2</a></li>
+	<br/>
+	<li><a href="javascript:admob.showBanner(admob.BannerSize.BANNER,admob.Position.BOTTOM_CENTER,null)">banner 3</a></li>
+	<br/>
+	<li><a href="javascript:admob.showBanner(admob.BannerSize.BANNER,admob.Position.BOTTOM_APP,null)">banner 4</a></li>
+	<br/>
+	<li><a href="javascript:admob.hideBanner()">hide banner</a></li>
+      </lu>
+    </div>
+
+    <div id="alertdiv"/>
+  </body>
+  -->
+
 </html>
 
