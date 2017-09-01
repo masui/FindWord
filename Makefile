@@ -28,6 +28,7 @@ release:
 		${APKPATH}/android-release-signed.apk \
 		${APKPATH}/android-release-signed-aligned.apk
 
+ri: releaseinstall
 releaseinstall:
 	adb install -r ${APKPATH}/android-release-signed-aligned.apk
 

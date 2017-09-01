@@ -1,7 +1,7 @@
 {
     "name": "com.pitecan.find_word",
     "displayName": "FindWord",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "description": "Finding a four-letter word in a character matrix.",
     "main": "index.js",
     "scripts": {
@@ -10,13 +10,16 @@
     "author": "Toshiyuki Masui",
     "license": "Apache-2.0",
     "dependencies": {
-        "admob": "^5.5.0",
         "cordova-android": "^6.2.3",
+        "cordova-plugin-admobpro": "^2.29.22",
+        "cordova-plugin-extension": "^1.5.1",
+        "cordova-plugin-firebase": "^0.1.24",
         "firebase": "^4.3.0"
     },
     "cordova": {
         "plugins": {
-            "admob": {}
+            "cordova-plugin-admobpro": {},
+            "cordova-plugin-firebase": {}
         },
         "platforms": [
             "android"

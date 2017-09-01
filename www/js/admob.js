@@ -1,90 +1,36 @@
-/*
-  admob設定
- */
+//
+//  admobpro設定
+//
 
-function showTestBanner(){
-    var admobParam=new admob.Params();
-    //admobParam.extra={'keyword':"admob phonegame"};
-    //admobParam.isForChild=true;
-    admobParam.isTesting=true;
-    admob.showBanner(admob.BannerSize.BANNER,admob.Position.TOP_CENTER,admobParam);
-}
-
-function showInterstitial(){
-    admob.isInterstitialReady(function(isReady){
-	if(isReady){
-	    admob.showInterstitial();
-	}
-    });
-}
-function onInterstitialReceive (message) {
-    alert(message.type+" ,you can show it now");
-    //admob.showInterstitial();//show it when received
-}
-function onReceiveFail (message) {
-    var msg=admob.Error[message.data];
-    if(msg==undefined){
-	msg=message.data;
-    }
-    document.getElementById("alertdiv").innerHTML="load fail: "+message.type+"  "+msg;
-    // alert("load fail: "+message.type+"  "+msg);
-}
+var admobid = {};
+admobid = { // for Android find_word
+    banner:       'ca-app-pub-8208995778524988/5621251489',
+    interstitial: 'ca-app-pub-8208995778524988/1000136737'
+};
 
 function onDeviceReady() {
-    var admobParam=new admob.Params();
-    //admobParam.isTesting=true;
-    admobParam.isTesting=false;
-    
-    //admob.initAdmob("ca-app-pub-3940256099942544/2934735716","ca-app-pub-3940256099942544/4411468910"); // テスト用
-    //admob.initAdmob("ca-app-pub-8208995778524988/5052386831","ca-app-pub-8208995778524988/4108402413"); // FindWord用
-    admob.initAdmob("ca-app-pub-8208995778524988/5621251489","ca-app-pub-8208995778524988/1000136737"); // Find_Word
-    
-    document.addEventListener(admob.Event.onInterstitialReceive, onInterstitialReceive, false);
-    document.addEventListener(admob.Event.onInterstitialFailedReceive,onReceiveFail, false);
-    document.addEventListener(admob.Event.onBannerFailedReceive,onReceiveFail, false);
-    
-    admob.showBanner(admob.BannerSize.BANNER,admob.Position.BOTTOM_APP,admobParam);
-}
-
-document.addEventListener('deviceready',onDeviceReady, false);
-
-/*
-function showTestBanner(){
-    var admobParam=new  admob.Params();
-    //admobParam.extra={'keyword':"admob phonegame"};
-    //admobParam.isForChild=true;
-    admobParam.isTesting=false;
-    admob.showBanner(admob.BannerSize.BANNER,admob.Position.TOP_CENTER,admobParam);
-}
-function showInterstitial(){
-    admob.isInterstitialReady(function(isReady){
-	if(isReady){
-	    admob.showInterstitial();
-	}
+    AdMob.setOptions({
+	//adSize: 'SMART_BANNER',
+	//publisherId: 'pub-8208995778524988',
+	//publisherId: '8E323CA26DE11B290C192B4E84898359',
+	position: AdMob.AD_POSITION.BOTTOM_CENTER,
+	isTesting: true, // set to true, to receiving test ad for testing purpose
+	bgColor: 'black' // color name, or '#RRGGBB'
+	// autoShow: true // auto show interstitial ad when loaded, set to false if prepare/show
+	// offsetTopBar: false, // avoid overlapped by status bar, for iOS7+
     });
+    
+    AdMob.createBanner({
+	adId: admobid.banner,
+	position: AdMob.AD_POSITION.BOTTOM_CENTER,
+	autoShow: true});
 }
-function onInterstitialReceive (message) {
-    alert(message.type + ', you now "show Interstitial" ad');
-    //admob.showInterstitial();//show it when received
-}
-function onReceiveFail (message) {
-    var msg=admob.Error[message.data];
-    if(msg==undefined){
-	msg=message.data;
+
+$(document).ready(function(){
+    // on mobile device, we must wait the 'deviceready' event fired by cordova
+    if(/(ipad|iphone|ipod|android|windows phone)/i.test(navigator.userAgent)) {
+	document.addEventListener('deviceready', onDeviceReady, false);
+    } else {
+	onDeviceReady();
     }
-    document.getElementById("alertdiv").innerHTML="load fail: "+message.type+"  "+msg;
-    //alert("load fail: "+message.type+"  "+msg);
-}
-function onDeviceReady() {
-    // admob.initAdmob("ca-app-pub-3940256099942544/2934735716","ca-app-pub-3940256099942544/4411468910");
-    // admob.initAdmob("ca-app-pub-8208995778524988/5052386831","ca-app-pub-8208995778524988/4108402413"); // FindWord用
-    admob.initAdmob("ca-app-pub-8208995778524988/5621251489","ca-app-pub-8208995778524988/1000136737"); // Find_Word
-    document.addEventListener(admob.Event.onInterstitialReceive, onInterstitialReceive, false);
-    document.addEventListener(admob.Event.onInterstitialFailedReceive,onReceiveFail, false);
-    document.addEventListener(admob.Event.onBannerFailedReceive,onReceiveFail, false);
-
-    admob.showBanner(admob.BannerSize.BANNER,admob.Position.BOTTOM_APP,admobParam);
-}
-document.addEventListener('deviceready',onDeviceReady, false);
-
-*/
+});

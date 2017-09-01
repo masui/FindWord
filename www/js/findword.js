@@ -1665,4 +1665,3 @@ function reset(){
 init();
 setsize();
 reset();
-
