@@ -7,12 +7,12 @@ KEYSTORE=.keystore
 ICON=images/FindWord256x256.png
 APKPATH=platforms/android/build/outputs/apk
 
-build:
+build: icons
 	cordova build android
 install:
 	adb install -r ${APKPATH}/android-debug.apk
 
-release:
+release: icons
 	/bin/rm -r -f ${APKPATH}/*.apk
 	cordova build android --release
 	jarsigner \
@@ -70,3 +70,13 @@ icons:
 # Android追加
 # cordova platforms add android
 # cordova plugin add admob
+
+clean:
+	/bin/rm -r -f platforms plugins node_modules package.json config.xml
+
+setup:
+	/bin/cp config.xml.template config.xml
+	/bin/cp package.json.template package.json
+	cordova platform add android
+	cordova plugin add cordova-plugin-admobpro
+	cordova plugin add cordova-plugin-firebase

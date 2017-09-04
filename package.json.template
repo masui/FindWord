@@ -10,19 +10,10 @@
     "author": "Toshiyuki Masui",
     "license": "Apache-2.0",
     "dependencies": {
-        "cordova-android": "^6.2.3",
-        "cordova-plugin-admobpro": "^2.29.22",
-        "cordova-plugin-extension": "^1.5.1",
-        "cordova-plugin-firebase": "^0.1.24",
-        "firebase": "^4.3.0"
     },
     "cordova": {
-        "plugins": {
-            "cordova-plugin-admobpro": {},
-            "cordova-plugin-firebase": {}
-        },
+        "plugins": {},
         "platforms": [
-            "android"
         ]
     }
 }
